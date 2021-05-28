@@ -30,7 +30,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="assets\pattern.txt" />
-    <Text Include="assets\Stage.txt" />
+    <Text Include="..\Pattern.txt" />
+    <Text Include="..\Stage.txt" />
   </ItemGroup>
 </Project>

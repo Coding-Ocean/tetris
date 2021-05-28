@@ -161,8 +161,8 @@
     <None Include="cpp.hint" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="assets\pattern.txt" />
-    <Text Include="assets\Stage.txt" />
+    <Text Include="..\Pattern.txt" />
+    <Text Include="..\Stage.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
