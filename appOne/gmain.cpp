@@ -1,4 +1,4 @@
-#define _SAMPLE2
+#define _EX
 #ifdef _EX
 
 #endif
