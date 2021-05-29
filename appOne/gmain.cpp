@@ -1,4 +1,7 @@
-#define _SAMPLE2
+#define _EX
+#ifdef _EX
+
+#endif
 #ifdef _SAMPLE2
 #include"libOne.h"
 float Satu = 255;
