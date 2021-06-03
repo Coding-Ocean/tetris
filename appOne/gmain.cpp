@@ -1,4 +1,4 @@
-#define _EX
+#define _SAMPLE1
 #ifdef _EX
 
 #endif
@@ -271,42 +271,42 @@ const int ROWS = 20;
 const int COLS = 12;
 int Stage[ROWS][COLS];
 float Size = 50;
-//基準ブロック位置と回転数
+//ブロックの回転数
 int R;
-//ブロックパターンの位置
+//ブロックパターンの位置（基準は[0]）
 int Px[4], Py[4];
 //ブロック移動制御
 int FallFlag = 0;
 int LoopCnt = 0;
 //ブロックパターン番号  ※ 兼色番号 ※
 int PtnNo;
-//ブロックパターンオフセット
+//ブロックパターンオフセット値(基準[0]からずらす値)
 int PtnOffsets[7][3][2] = {
     //■□■■...0
-    -1,0,   1,0,  2,0,
+    {{-1,0}, {1,0}, {2,0}},
     //■
     //■□■....1
-    -1,-1, -1,0,  1,0,
+    {{-1,-1},{-1,0},{1,0}},
     //  　■
     //■□■....2
-    -1,0,   1,-1, 1,0,
+    {{-1,0}, {1,0}, {1,-1}},
     //■□
     //　■■....3
-    -1,0,   0,1,  1,1,
+    {{-1,0}, {0,1}, {1,1}},
     //　□■
     //■■  ....4
-     1,0,   0,1, -1,1,
+    {{ 1,0}, {0,1}, {-1,1}},
      //　■
      //■□■....5
-     -1,0,   0,-1, 1,0,
+    {{-1,0}, {0,-1}, {1,0}},
      //□■
      //■■......6
-      1,0,   0,1,  1,1,
+    {{1,0},  {0,1},  {1,1}},
 };
 
 //関数----------------------------------------------------------------
 void init() {
-    //壁と背景の色番号をStage2次元配列にセット
+    //壁と背景の色番号をStage 2次元配列 にセット
     for (int y = 0; y < ROWS; y++) {
         Stage[y][0] = Stage[y][COLS - 1] = WALL;
         for (int x = 1; x < COLS - 1; x++) {
@@ -316,7 +316,7 @@ void init() {
             }
         }
     }
-    //ブロック初期値（はじめは４つとも同じでよい）
+    //ブロック初期位置（開始時は４つとも同じでよい）
     for (int i = 0; i < 4; i++) {
         Px[i] = 5;
         Py[i] = 1;
@@ -332,12 +332,16 @@ void drawStage() {
     colorMode(HSV);
     strokeWeight(20);
     rectMode(CENTER);
+    float px, py, halfSize = Size / 2;
     for (int y = 0; y < ROWS; y++) {
         for (int x = 0; x < COLS; x++) {
+            //Stage配列の番号に従った色のrectを描画する
             int no = Stage[y][x];
             stroke(Color[no]);
             fill(0, 0, 180);
-            rect(Size / 2 + Size * x, Size / 2 + Size * y, Size / 2, Size / 2);
+            px = halfSize + Size * x;
+            py = halfSize + Size * y;
+            rect(px, py, halfSize, halfSize);
         }
     }
 }
@@ -359,6 +363,13 @@ void setPtnPosition() {
         Py[i + 1] = Py[0] + ofsY;
     }
 }
+void delPtnNoFromStage() {
+    for (int i = 0; i < 4; i++) {
+        int x = Px[i];
+        int y = Py[i];
+        Stage[y][x] = BACK;
+    }
+}
 void setPtnNoToStage() {
     setPtnPosition();
     for (int i = 0; i < 4; i++) {
@@ -367,15 +378,10 @@ void setPtnNoToStage() {
         Stage[y][x] = PtnNo;
     }
 }
-void delPtnNoFromStage() {
-    for (int i = 0; i < 4; i++) {
-        int x = Px[i];
-        int y = Py[i];
-        Stage[y][x] = BACK;
-    }
-}
 int collision() {
+    //仮の位置を決める
     setPtnPosition();
+    //当たっているかチェック
     int flag = 0;
     for (int i = 0; i < 4; i++) {
         int x = Px[i];
@@ -388,7 +394,7 @@ int collision() {
 }
 void complete() {
     for (int y = 1; y < ROWS - 1; y++) {
-        //y行がそろったか
+        //y行がそろったかチェック
         int flag = 1;
         for (int x = 1; x < COLS - 1; x++) {
             if (Stage[y][x] == BACK) {
